@@ -6,6 +6,9 @@ environment:
   CIRRUS_CLONE_DEPTH: 1
 
 task:
+  # Use the maximum timeout. Needed when rebuilding packages on a channel update.
+  timeout_in: 120m
+
   matrix:
     - name: vm_test
       container:

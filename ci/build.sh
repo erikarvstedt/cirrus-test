@@ -8,9 +8,15 @@ cd "${BASH_SOURCE[0]%/*}"
 scenario=${scenario:-}
 CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
 
-if [[ $scenario && ! -e /dev/kvm ]]; then
-    >&2 echo "No KVM available on VM host."
-    exit 1
+if [[ $scenario && ]]; then
+    if [[ ! -e /dev/kvm ]]; then
+        >&2 echo "No KVM available on VM host."
+        exit 1
+    fi
+    ls -al /dev/kvm
+    sudo chmod go+rw /dev/kvm
+    ls -al /dev/kvm
+    lsmod
 fi
 
 cachix use nix-bitcoin
