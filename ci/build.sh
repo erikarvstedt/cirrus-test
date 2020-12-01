@@ -8,7 +8,7 @@ cd "${BASH_SOURCE[0]%/*}"
 scenario=${scenario:-}
 CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
 
-if [[ $scenario && ]]; then
+if [[ $scenario ]]; then
     if [[ ! -e /dev/kvm ]]; then
         >&2 echo "No KVM available on VM host."
         exit 1
