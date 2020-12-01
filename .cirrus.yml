@@ -12,7 +12,7 @@ task:
       #   kvm: true
       environment:
         channel: nixpkgs
-        checkKVM: 1
+        # checkKVM: 1
         getBuildExpr: test/run-tests.sh --scenario $scenario exprForCI
       matrix:
         - environment:
@@ -25,15 +25,17 @@ task:
     #     channel: nixpkgs-unstable
     #     checkKVM: 1
 
-  # setup_nix_script:
-  #   - |
-  #     if [[ $checkKVM && ! -e /dev/kvm ]]; then
-  #       >&2 echo "No KVM available on VM Host."
-  #       exit 1
-  #     fi
-  #   - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
-  #   - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
-  #   - cachix use nix-bitcoin
+  setup_nix_script:
+    - |
+      if [[ $checkKVM && ! -e /dev/kvm ]]; then
+        >&2 echo "No KVM available on VM Host."
+        exit 1
+      fi
+    - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
+    - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
+    - which bash
+    - nix-env -iA bash
+    - cachix use nix-bitcoin
 
   build_script:
     - echo "$NIX_PATH ($(nix eval --raw nixpkgs.lib.version))"
