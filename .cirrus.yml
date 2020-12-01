@@ -8,11 +8,12 @@ environment:
 task:
   matrix:
     - name: vm_test
-      container:
-        kvm: true
+      # container:
+      #   kvm: true
       environment:
         channel: nixpkgs
         checkKVM: 1
+        getBuildExpr: test/run-tests.sh --scenario $scenario exprForCI
       matrix:
         - environment:
             scenario: default
@@ -24,27 +25,21 @@ task:
     #     channel: nixpkgs-unstable
     #     checkKVM: 1
 
-  setup_nix_script:
-    - |
-      if [[ $checkKVM && ! -e /dev/kvm ]]; then
-        >&2 echo "No KVM available on VM Host."
-        exit 1
-      fi
-    - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
-    - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
-    - cachix use nix-bitcoin
+  # setup_nix_script:
+  #   - |
+  #     if [[ $checkKVM && ! -e /dev/kvm ]]; then
+  #       >&2 echo "No KVM available on VM Host."
+  #       exit 1
+  #     fi
+  #   - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
+  #   - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
+  #   - cachix use nix-bitcoin
 
   build_script:
     - echo "$NIX_PATH ($(nix eval --raw nixpkgs.lib.version))"
-    - |
-      getBuildExpr() {
-          if [[ $TestModules ]]; then
-              test/run-tests.sh --scenario $scenario exprForCI
-          else
-              echo "(import ./. {}).$PKG"
-          fi
-      }
-    - buildExpr=$(getBuildExpr)
+    - buildExpr=$(eval $getBuildExpr)
+    - echo $buildExpr
+    - exit 0
     - time nix-instantiate -E "$buildExpr" --add-root ./drv --indirect
     - outPath=$(nix-store --query ./drv)
     - |
