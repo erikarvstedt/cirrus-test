@@ -25,7 +25,7 @@ task:
     - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
     - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
     - cachix use nix-bitcoin
-    - echo "$NIX_PATH $(nix eval nixpkgs.lib.version)"
+    - echo "$NIX_PATH ($(nix eval --raw nixpkgs.lib.version))"
 
   build_script:
     - printenv
