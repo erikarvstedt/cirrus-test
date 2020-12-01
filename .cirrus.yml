@@ -3,7 +3,7 @@ container:
   kvm: true
 
 environment:
-  # Save some traffic by excluding the full repo history
+  # Save some traffic by excluding the full git history
   CIRRUS_CLONE_DEPTH: 1
 
 task:
@@ -21,7 +21,6 @@ task:
     - name: build_unstable_pkgs
       environment:
         channel: nixpkgs-unstable
-        checkKVM: 1
 
   install_nix_script:
     - |
@@ -31,6 +30,7 @@ task:
       fi
     - ls -al /dev/kvm
     - whoami
+
     - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
     - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
     - cachix use nix-bitcoin
