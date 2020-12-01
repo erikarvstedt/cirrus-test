@@ -7,20 +7,20 @@ environment:
 
 task:
   matrix:
-    # - name: vm_test
-    #   # container:
-    #   #   kvm: true
-    #   environment:
-    #     nixpkgs: nixpkgs
-    #   matrix:
-    #     - environment:
-    #         scenario: default
-    #     # - environment:
-    #     #     scenario: netns
-
-    - name: build_unstable_pkgs
+    - name: vm_test
+      container:
+        kvm: true
       environment:
-        nixpkgs: nixpkgs-unstable
+        nixpkgs: nixpkgs
+      matrix:
+        - environment:
+            scenario: default
+        # - environment:
+        #     scenario: netns
+
+    # - name: build_unstable_pkgs
+    #   environment:
+    #     nixpkgs: nixpkgs-unstable
 
   build_script:
     - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $nixpkgs)"
