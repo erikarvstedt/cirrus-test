@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# To test this script locally, run
+#   HOME=/tmp/ci-build ./build.sh
+#   HOME=/tmp/ci-build scenario=default ./build.sh
+#
+# Setting HOME is needed to prevent the effects of the cachix command
+
 set -euo pipefail
 set -x
 
@@ -13,10 +19,9 @@ if [[ $scenario ]]; then
         >&2 echo "No KVM available on VM host."
         exit 1
     fi
-    ls -al /dev/kvm
-    chmod go+rw /dev/kvm
-    ls -al /dev/kvm
-    lsmod
+    if [[ $(stat -c %a /dev/kvm) != *6 ]]; then
+        chmod o+rw /dev/kvm
+    fi
 fi
 
 cachix use nix-bitcoin
