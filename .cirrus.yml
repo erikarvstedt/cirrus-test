@@ -1,6 +1,5 @@
 container:
   image: nixos/nix
-  kvm: true
 
 environment:
   # Save some traffic by excluding the full git history
@@ -21,6 +20,7 @@ task:
     - name: build_unstable_pkgs
       environment:
         channel: nixpkgs-unstable
+        checkKVM: 1
 
   install_nix_script:
     - |
