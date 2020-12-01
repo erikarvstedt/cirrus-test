@@ -11,4 +11,4 @@ let
     nanopos
   ];
 in
-pkgs.writeText "ci-pkgs" (pkgs.lib.concatMapStringsSep "\n" toString ciPkgs);
+pkgs.writeText "ci-pkgs" (pkgs.lib.concatMapStringsSep "\n" toString ciPkgs)

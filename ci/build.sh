@@ -3,6 +3,9 @@
 set -euo pipefail
 set -x
 
+scenario=${scenario:-}
+CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
+
 if [[ $scenario && ! -e /dev/kvm ]]; then
     >&2 echo "No KVM available on VM host."
     exit 1
