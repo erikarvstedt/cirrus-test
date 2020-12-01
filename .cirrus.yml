@@ -1,5 +1,6 @@
 container:
   image: nixos/nix
+  kvm: true
 
 environment:
   # Save some traffic by excluding the full repo history
@@ -22,6 +23,13 @@ task:
         channel: nixpkgs-unstable
 
   install_nix_script:
+    - |
+      if [[ $checkKVM && ! -e /dev/kvm ]]; then
+        >&2 echo "No KVM available on VM Host."
+        exit 1
+      fi
+    - ls -al /dev/kvm
+    - whoami
     - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $channel)"
     - nix-env --quiet -iA cachix -f https://cachix.org/api/v1/install
     - cachix use nix-bitcoin
