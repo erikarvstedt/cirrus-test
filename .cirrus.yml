@@ -21,6 +21,7 @@ task:
     - name: build_unstable_pkgs
       environment:
         channel: nixpkgs-unstable
+        checkKVM: 1
 
   install_nix_script:
     - |
