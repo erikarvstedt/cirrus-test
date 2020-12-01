@@ -56,5 +56,3 @@ if [[ $CACHIX_SIGNING_KEY ]]; then
     # Wait until cachix has finished uploading
     nix run -f '<nixpkgs>' ruby -c ../helper/wait-for-network-idle.rb $cachixPid
 fi
-
-# foo
