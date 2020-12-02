@@ -3,14 +3,16 @@
 # This script can also be run locally for testing:
 #   scenario=default ./build.sh
 #
-# It leaves no persistent traces on the host system (when variable CIRRUS_CI is unset).
+# WARNING: This script fetches contents from an untrusted $cachixCache to your local nix-store.
+#
+# This script leaves no persistent traces on the host system (when variable CIRRUS_CI is unset).
 
 set -euo pipefail
 set -x
 
 scenario=${scenario:-}
 CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
-binaryCache=nix-bitcoin-ci-ea
+cachixCache=nix-bitcoin-ci-ea
 
 if [[ -v CIRRUS_CI ]]; then
     tmpDir=/tmp
@@ -29,7 +31,7 @@ else
     export HOME=$tmpDir
 fi
 
-cachix use $binaryCache
+# cachix use $cachixCache
 cd "${BASH_SOURCE[0]%/*}"
 
 ## Build
@@ -45,7 +47,7 @@ fi
 time nix-instantiate -E "$buildExpr" --add-root $tmpDir/drv --indirect
 
 outPath=$(nix-store --query $tmpDir/drv)
-if nix path-info --store https://nix-bitcoin.cachix.org $outPath &>/dev/null; then
+if nix path-info --store https://$cachixCache.cachix.org $outPath &>/dev/null; then
     echo "$outPath" has already been built successfully.
     exit 0
 fi
@@ -53,7 +55,7 @@ fi
 # Cirrus doesn't expose secrets to pull-request builds,
 # so skip cache uploading in this case
 if [[ $CACHIX_SIGNING_KEY ]]; then
-    cachix push $binaryCache --watch-store &
+    cachix push $cachixCache --watch-store &
     cachixPid=$!
 fi
 
