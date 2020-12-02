@@ -4,7 +4,7 @@
 #   HOME=/tmp/ci-build ./build.sh
 #   HOME=/tmp/ci-build scenario=default ./build.sh
 #
-# Setting HOME is needed to prevent the effects of the cachix command
+# Setting HOME is needed to guard against the effects of cachix
 
 set -euo pipefail
 set -x
@@ -35,9 +35,9 @@ else
     buildExpr="import ./build.nix"
 fi
 
-time nix-instantiate -E "$buildExpr" --add-root ./drv --indirect
+time nix-instantiate -E "$buildExpr" --add-root $TMP/drv --indirect
 
-outPath=$(nix-store --query ./drv)
+outPath=$(nix-store --query $TMP/drv)
 if nix path-info --store https://nix-bitcoin.cachix.org $outPath &>/dev/null; then
     echo "$outPath" has already been built successfully.
     exit 0
@@ -50,7 +50,7 @@ if [[ $CACHIX_SIGNING_KEY ]]; then
     cachixPid=$!
 fi
 
-nix-build ./drv
+nix-build $TMP/drv
 
 if [[ $CACHIX_SIGNING_KEY ]]; then
     # Wait until cachix has finished uploading
