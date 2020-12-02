@@ -31,7 +31,7 @@ else
     export HOME=$TMPDIR
 fi
 
-cachix use nix-bitcoin-ci-ea
+cachix use nix-bitcoin
 echo "$NIX_PATH ($(nix eval --raw nixpkgs.lib.version))"
 
 ## Build
@@ -53,7 +53,7 @@ fi
 # Cirrus doesn't expose secrets to pull-request builds,
 # so skip cache uploading in this case
 if [[ $CACHIX_SIGNING_KEY ]]; then
-    cachix push nix-bitcoin --watch-store &
+    cachix push nix-bitcoin-ci-ea --watch-store &
     cachixPid=$!
 fi
 
