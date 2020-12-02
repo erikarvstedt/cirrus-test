@@ -3,15 +3,15 @@
 # This script can also be run locally for testing:
 #   scenario=default ./build.sh
 #
-# When variable CIRRUS_CI is unset it leaves no persistent traces on the host system.
+# It leaves no persistent traces on the host system (when variable CIRRUS_CI is unset).
 
 set -euo pipefail
 set -x
 
-cd "${BASH_SOURCE[0]%/*}"
-
 scenario=${scenario:-}
 CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
+
+cd "${BASH_SOURCE[0]%/*}"
 
 if [[ -v CIRRUS_CI ]]; then
     TMPDIR=/tmp
@@ -31,7 +31,7 @@ else
     export HOME=$TMPDIR
 fi
 
-cachix use nix-bitcoin
+cachix use nix-bitcoin-ci-ea
 echo "$NIX_PATH ($(nix eval --raw nixpkgs.lib.version))"
 
 ## Build

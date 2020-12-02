@@ -2,6 +2,7 @@ container:
   image: nixos/nix
 
 environment:
+  CACHIX_SIGNING_KEY: ENCRYPTED[449fc699b3704075dcbb7c30bfbfa9c35861a4e0b65e1f105f4f8668dfb50aed3d842384fd97632fdebe009981f24f61]
   # Save some traffic by excluding the full git history
   CIRRUS_CLONE_DEPTH: 1
 
@@ -10,20 +11,22 @@ task:
   timeout_in: 120m
 
   matrix:
-    - name: vm_test
-      container:
-        kvm: true
-      environment:
-        nixpkgs: nixpkgs
-      matrix:
-        - environment:
-            scenario: default
-        # - environment:
-        #     scenario: netns
-
-    # - name: build_unstable_pkgs
+    # - name: vm_test
+    #   container:
+    #     kvm: true
     #   environment:
-    #     nixpkgs: nixpkgs-unstable
+    #     nixpkgs: nixpkgs
+    #   matrix:
+    #     - environment:
+    #         scenario: default
+    #     - environment:
+    #         scenario: netns
+    #     - environment:
+    #         scenario: netnsRegtest
+
+    - name: build_unstable_pkgs
+      environment:
+        nixpkgs: nixpkgs-unstable
 
   # This script is run as root
   build_script:
