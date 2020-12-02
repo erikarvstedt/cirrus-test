@@ -31,7 +31,7 @@ else
     export HOME=$tmpDir
 fi
 
-# cachix use $cachixCache
+cachix use $cachixCache
 cd "${BASH_SOURCE[0]%/*}"
 
 ## Build
