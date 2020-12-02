@@ -1,5 +1,7 @@
 container:
   image: nixos/nix
+  # Besides virtualization, this also enables privileged containers which are required for
+  # sandboxed builds
   kvm: true
 
 environment:
@@ -12,18 +14,20 @@ task:
   timeout_in: 120m
 
   matrix:
-    # - name: vm_test
-    #   container:
-    #     kvm: true
-    #   environment:
-    #     nixpkgs: nixpkgs
-    #   matrix:
-    #     - environment:
-    #         scenario: default
-    #     - environment:
-    #         scenario: netns
-    #     - environment:
-    #         scenario: netnsRegtest
+    - name: vm_test
+      environment:
+        nixpkgs: nixpkgs
+      container:
+        # A maximum of 16 CPUs is shared among all concurrent tasks.
+        # https://cirrus-ci.org/faq/#are-there-any-limits
+        cpu: 4
+      matrix:
+        - environment:
+            scenario: default
+        - environment:
+            scenario: netns
+        - environment:
+            scenario: netnsRegtest
 
     - name: build_unstable_pkgs
       environment:
@@ -31,6 +35,6 @@ task:
 
   # This script is run as root
   build_script:
-    - echo "sandbox = true" >> /etc/nix/nix.conf
+    - { echo "sandbox = true"; echo "max-jobs = auto"; }  >> /etc/nix/nix.conf
     - export NIX_PATH="nixpkgs=$(nix eval --raw -f pkgs/nixpkgs-pinned.nix $nixpkgs)"
     - nix run -f '<nixpkgs>' bash cachix -c ./ci/build.sh
