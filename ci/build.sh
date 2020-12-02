@@ -56,12 +56,10 @@ fi
 # so skip cache uploading in this case
 if [[ $CACHIX_SIGNING_KEY ]]; then
     cachix push $cachixCache --watch-store &
-    cachixPid=$!
 fi
 
 nix-build --out-link $tmpDir/result $tmpDir/drv
 
 if [[ $CACHIX_SIGNING_KEY ]]; then
-    # Wait until cachix has finished uploading
-    nix run -f '<nixpkgs>' ruby strace -c ../helper/wait-for-network-idle.rb $cachixPid
+    cachix push $cachixCache $tmpDir/result
 fi
