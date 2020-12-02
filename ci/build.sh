@@ -50,7 +50,7 @@ else
 fi
 
 time nix-instantiate -E "$buildExpr" --add-root $tmpDir/drv --indirect > /dev/null
-printf "instantiated derivation "; realpath $tmpDir/drv
+printf "instantiated "; realpath $tmpDir/drv
 
 outPath=$(nix-store --query $tmpDir/drv)
 if nix path-info --store https://$cachixCache.cachix.org $outPath &>/dev/null; then

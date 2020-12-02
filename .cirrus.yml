@@ -3,6 +3,7 @@ container:
   # Besides virtualization, this also enables privileged containers which are required for
   # sandboxed builds
   kvm: true
+  # Needed for package builds
   memory: 8G
 
 environment:
