@@ -3,7 +3,7 @@
 # This script can also be run locally for testing:
 #   scenario=default ./build.sh
 #
-# When not run as root it leaves no traces (outside of `/nix/store`) on the host system.
+# When variable CIRRUS_CI is unset it leaves no persistent traces on the host system.
 
 set -euo pipefail
 set -x
@@ -15,20 +15,20 @@ CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
 
 if [[ -v CIRRUS_CI ]]; then
     TMPDIR=/tmp
+    if [[ $scenario ]]; then
+        if [[ ! -e /dev/kvm ]]; then
+            >&2 echo "No KVM available on VM host."
+            exit 1
+        fi
+        if [[ $(stat -c %a /dev/kvm) != *6 ]]; then
+            chmod o+rw /dev/kvm
+        fi
+    fi
 else
     TMPDIR=$(mktemp -d -p /tmp)
     trap "rm -rf $TMPDIR" EXIT
-fi
-export HOME=$TMPDIR
-
-if [[ $scenario ]]; then
-    if [[ ! -e /dev/kvm ]]; then
-        >&2 echo "No KVM available on VM host."
-        exit 1
-    fi
-    if [[ $(stat -c %a /dev/kvm) != *6 ]]; then
-        chmod o+rw /dev/kvm
-    fi
+    # Prevent cachix from writing to HOME
+    export HOME=$TMPDIR
 fi
 
 cachix use nix-bitcoin
