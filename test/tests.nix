@@ -88,7 +88,7 @@ let testEnv = rec {
       # Build zmq plugin, but don't enable it.
       # On slower CI nodes it fails with
       #   plugin-cl-zmq.py: Killing plugin: failed to respond to 'getmanifest' in time, terminating.
-      system.extraDependencies = config.nix-bitcoin.pkgs.clightning-plugins.zmq;
+      system.extraDependencies = [ config.nix-bitcoin.pkgs.clightning-plugins.zmq ];
     })
     ];
   };
