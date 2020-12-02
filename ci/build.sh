@@ -59,7 +59,7 @@ if [[ $CACHIX_SIGNING_KEY ]]; then
     cachixPid=$!
 fi
 
-nix-build $tmpDir/drv
+nix-build --out-link $tmpDir/result $tmpDir/drv
 
 if [[ $CACHIX_SIGNING_KEY ]]; then
     # Wait until cachix has finished uploading
