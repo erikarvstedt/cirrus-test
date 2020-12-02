@@ -31,7 +31,7 @@ else
     export HOME=$TMPDIR
 fi
 
-cachix use nix-bitcoin
+cachix use nix-bitcoin-ci-ea
 echo "$NIX_PATH ($(nix eval --raw nixpkgs.lib.version))"
 
 ## Build
