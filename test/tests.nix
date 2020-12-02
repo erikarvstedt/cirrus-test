@@ -84,11 +84,18 @@ let testEnv = rec {
         prometheus.enable = true;
         rebalance.enable = true;
         summary.enable = true;
+        zmq = let tcpEndpoint = "tcp://127.0.0.1:5501"; in {
+          enable = true;
+          channel-opened = tcpEndpoint;
+          connect = tcpEndpoint;
+          disconnect = tcpEndpoint;
+          invoice-payment = tcpEndpoint;
+          warning = tcpEndpoint;
+          forward-event = tcpEndpoint;
+          sendpay-success = tcpEndpoint;
+          sendpay-failure = tcpEndpoint;
+        };
       };
-      # Build zmq plugin, but don't enable it.
-      # On slower CI nodes it fails with
-      #   plugin-cl-zmq.py: Killing plugin: failed to respond to 'getmanifest' in time, terminating.
-      system.extraDependencies = [ config.nix-bitcoin.pkgs.clightning-plugins.zmq ];
     })
     ];
   };
