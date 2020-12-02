@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-# To test this script locally, run
-#   HOME=/tmp/ci-build ./build.sh
-#   HOME=/tmp/ci-build scenario=default ./build.sh
+# This script can also be run locally for testing:
+#   scenario=default ./build.sh
 #
-# Setting HOME is needed to guard against the effects of cachix
+# When not run as root it leaves no traces (outside of `/nix/store`) on the host system.
 
 set -euo pipefail
 set -x
@@ -13,6 +12,14 @@ cd "${BASH_SOURCE[0]%/*}"
 
 scenario=${scenario:-}
 CACHIX_SIGNING_KEY=${CACHIX_SIGNING_KEY:-}
+
+if [[ -v CIRRUS_CI ]]; then
+    TMPDIR=/tmp
+else
+    TMPDIR=$(mktemp -d -p /tmp)
+    trap "rm -rf $TMPDIR" EXIT
+fi
+export HOME=$TMPDIR
 
 if [[ $scenario ]]; then
     if [[ ! -e /dev/kvm ]]; then
@@ -35,9 +42,9 @@ else
     buildExpr="import ./build.nix"
 fi
 
-time nix-instantiate -E "$buildExpr" --add-root $TMP/drv --indirect
+time nix-instantiate -E "$buildExpr" --add-root $TMPDIR/drv --indirect
 
-outPath=$(nix-store --query $TMP/drv)
+outPath=$(nix-store --query $TMPDIR/drv)
 if nix path-info --store https://nix-bitcoin.cachix.org $outPath &>/dev/null; then
     echo "$outPath" has already been built successfully.
     exit 0
@@ -50,7 +57,7 @@ if [[ $CACHIX_SIGNING_KEY ]]; then
     cachixPid=$!
 fi
 
-nix-build $TMP/drv
+nix-build $TMPDIR/drv
 
 if [[ $CACHIX_SIGNING_KEY ]]; then
     # Wait until cachix has finished uploading
