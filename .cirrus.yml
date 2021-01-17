@@ -10,4 +10,5 @@ environment:
 
 task:
   build_script:
+    # test
     - echo "TEST_VAR: $TEST_VAR"
